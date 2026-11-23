@@ -1,0 +1,17 @@
+{
+  "name": "walk",
+  "private": true,
+  "packageManager": "pnpm@9.12.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev:api": "pnpm --filter @walk/api dev",
+    "dev:worker": "pnpm --filter @walk/worker dev",
+    "dev:web": "pnpm --filter @walk/web dev",
+    "db:generate": "pnpm --filter @walk/db generate",
+    "db:migrate": "pnpm --filter @walk/db migrate:dev",
+    "db:deploy": "pnpm --filter @walk/db migrate:deploy",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": { "typescript": "^5.6.3" }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@walk/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../../.env src/index.ts",
+    "start": "tsx src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@walk/db": "workspace:*",
+    "@walk/game": "workspace:*",
+    "bullmq": "^5.25.0",
+    "ioredis": "^5.4.1",
+    "@walk/solana": "workspace:*",
+    "zod": "^3.23.8",
+    "@solana/web3.js": "^1.98.0",
+    "@solana/spl-token": "^0.4.9",
+    "bs58": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}

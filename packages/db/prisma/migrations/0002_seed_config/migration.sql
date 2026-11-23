@@ -1,0 +1,32 @@
+-- Migration 0002 : valeurs initiales de game_config (section 9). Modifiables ensuite depuis l'admin.
+-- Clés ajoutées (valeurs qui seraient sinon codées en dur) : max_level, min_speed_step_kmh, streak_bonus_cap_pct, multiplier_step.
+INSERT INTO game_config (key, value) VALUES
+  ('base_rate_per_min',      '2'::jsonb),
+  ('emission_mode',          '"auto"'::jsonb),
+  ('emission_manual_factor', '1'::jsonb),
+  ('emission_tiers',         '[{"max_players":200,"factor":2.0},{"max_players":500,"factor":1.5},{"max_players":2000,"factor":1.2},{"max_players":null,"factor":1.0}]'::jsonb),
+  ('daily_emission_cap',     '6000'::jsonb),
+  ('decay_enabled',          'false'::jsonb),
+  ('cost_base',              '20'::jsonb),
+  ('cost_growth',            '1.38'::jsonb),
+  ('upgrade_minutes_factor', '10'::jsonb),
+  ('split_upgrade',          '[40,40,20]'::jsonb),
+  ('market_fee_pct',         '8'::jsonb),
+  ('listing_fee',            '2'::jsonb),
+  ('feature_fee',            '10'::jsonb),
+  ('royalty_pct',            '5'::jsonb),
+  ('treasury_allocation',    '[30,40,20,10]'::jsonb),
+  ('claim_fee_pct',          '2'::jsonb),
+  ('claim_min',              '50'::jsonb),
+  ('chest_rates',            '{"session_chance_pct":8,"streak7_guaranteed":1,"level_up_guaranteed":1,"top10_min_rarity":"rare","rarity":{"commune":70,"rare":22,"epique":7,"legendaire":1}}'::jsonb),
+  ('streak_bonus_pct',       '2'::jsonb),
+  ('streak_bonus_cap_pct',   '20'::jsonb),
+  ('parts_bonus_cap_pct',    '60'::jsonb),
+  ('min_speed_kmh',          '3'::jsonb),
+  ('min_speed_step_kmh',     '0.1'::jsonb),
+  ('minutes_base',           '5'::jsonb),
+  ('minutes_step',           '0.5'::jsonb),
+  ('max_level',              '20'::jsonb),
+  ('multiplier_step',        '0.1'::jsonb),
+  ('claims_paused',          'false'::jsonb)
+ON CONFLICT (key) DO NOTHING;
