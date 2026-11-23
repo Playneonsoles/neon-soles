@@ -20,7 +20,7 @@
     "@walk/solana": "workspace:*",
     "fastify": "^5.1.0",
     "zod": "^3.23.8",
-    "@solana/web3.js": "^1.98.0"
+    "@solana/web3.js": "^3.2.1"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
