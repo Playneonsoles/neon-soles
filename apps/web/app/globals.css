@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+body {
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(139, 92, 246, 0.22), transparent 60%),
+    radial-gradient(700px 400px at 90% 110%, rgba(34, 211, 238, 0.14), transparent 60%),
+    #0b0f1a;
+  color: #e7ecf5;
+  min-height: 100dvh;
+}
+.glass {
+  background: rgba(11, 15, 26, 0.62);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(57, 255, 136, 0.28);
+  border-radius: 1.25rem;
+}
+:focus-visible { outline: 2px solid #39ff88; outline-offset: 3px; }
+
+/* Bouton du wallet-adapter aux couleurs du jeu */
+.wallet-adapter-button { background: #39ff88 !important; color: #0b0f1a !important; font-family: var(--font-display), sans-serif !important; font-weight: 700 !important; border-radius: 999px !important; height: 52px !important; padding: 0 28px !important; }
+.wallet-adapter-button:hover { box-shadow: 0 0 24px rgba(57, 255, 136, 0.45); }
+.wallet-adapter-modal-wrapper { background: #121828 !important; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* Effets des chaussures (aucune animation si l'utilisateur demande moins de mouvement : règle ci-dessus) */
+@keyframes sx-twinkle { 0%,100% { opacity: 0; transform: scale(.4); } 50% { opacity: 1; transform: scale(1.2); } }
+@keyframes sx-aura { 50% { transform: scale(1.07); opacity: .6; } }
+@keyframes sx-trail { 0% { opacity: .9; transform: translateX(0); } 100% { opacity: 0; transform: translateX(-40px); } }
+@keyframes sx-zap { 0%,60%,100% { opacity: 0; } 65%,75% { opacity: 1; } }
+@keyframes sx-wing { 50% { transform: rotate(-8deg); } }
+@keyframes sx-shine { 0%,100% { filter: drop-shadow(0 0 14px currentColor) brightness(1.1); } 50% { filter: drop-shadow(0 0 34px currentColor) drop-shadow(0 0 10px #fff) brightness(1.5) saturate(1.4); } }
+@keyframes sx-bolt { 0%,100% { opacity: .55; transform: scale(.92) rotate(-4deg); } 50% { opacity: 1; transform: scale(1.1) rotate(4deg); } }
+.sx-bolt { animation: sx-bolt .9s ease-in-out infinite; }
+@keyframes sx-step { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-9px) rotate(3deg); } }
+.sx-twinkle { animation: sx-twinkle 1.8s ease-in-out infinite; }
+.sx-aura { transform-box: fill-box; transform-origin: center; animation: sx-aura 2.4s ease-in-out infinite; }
+.sx-trail { animation: sx-trail 1s linear infinite; }
+.sx-zap { animation: sx-zap 1.4s steps(1) infinite; }
+.sx-wing { animation: sx-wing 1.2s ease-in-out infinite; transform-origin: 50% 100%; transform-box: fill-box; }
+.sx-step { animation: sx-step .7s ease-in-out infinite; }
+.sx-step.sx-shine { animation: sx-step .7s ease-in-out infinite, sx-shine 1s ease-in-out infinite; }
+
+/* Marcheur animé de la page de garde */
+@keyframes nw-stroll{0%{left:0;opacity:0}5%{opacity:1}95%{opacity:1}100%{left:calc(100% - 34px);opacity:0}}
+@keyframes nw-bob{50%{transform:translateY(-1.5px)}}
+@keyframes nw-swing{0%,100%{transform:rotate(26deg)}50%{transform:rotate(-26deg)}}
+.nw-notif{position:absolute;left:20px;bottom:52px;white-space:nowrap;font:700 10px/1 var(--font-display),sans-serif;border-radius:999px;padding:5px 9px 5px 6px;display:flex;align-items:center;gap:5px;transform-origin:0 100%;transform:scale(0);opacity:0}
+.nw-notif .coin{width:11px;height:11px;border-radius:50%;background:#FBBF24;border:2px solid #B45309;display:block}
+.nw-notif.n1{color:#06130C;background:#39ff88;box-shadow:0 0 12px rgba(57,255,136,.7);animation:nw-pop1 10s ease-out infinite}
+.nw-notif.n2{color:#fff;background:#2563EB;box-shadow:0 0 12px rgba(37,99,235,.7);padding:5px 12px;animation:nw-pop2 10s ease-out infinite}
+.nw-notif.n3{color:#06130C;background:#DCFCE7;box-shadow:0 0 14px rgba(57,255,136,.8);animation:nw-pop3 10s ease-out infinite}
+.nw-notif svg{width:14px;height:14px;display:block}
+.nw-tap{position:absolute;left:25px;bottom:27px;width:12px;height:12px;border-radius:50%;border:2px solid #fff;opacity:0;animation:nw-tap 10s ease-out infinite}
+@keyframes nw-pop1{0%,3%{transform:scale(0);opacity:0}7%{transform:scale(1.15);opacity:1}10%,16%{transform:scale(1);opacity:1}18%,100%{transform:scale(0.6);opacity:0}}
+@keyframes nw-pop2{0%,17%{transform:scale(0);opacity:0}21%{transform:scale(1.12);opacity:1}24%{transform:scale(1)}26.5%{transform:scale(.88)}29%{transform:scale(1);opacity:1}31%,100%{transform:scale(.6);opacity:0}}
+@keyframes nw-pop3{0%,30%{transform:scale(0);opacity:0}35%{transform:scale(1.15);opacity:1}38%,60%{transform:scale(1);opacity:1}64%,100%{transform:scale(1);opacity:0}}
+@keyframes nw-tap{0%,25%{opacity:0;transform:scale(.4)}26.5%{opacity:1;transform:scale(.7)}31%{opacity:0;transform:scale(2)}100%{opacity:0}}
+@keyframes nw-flash{0%,3%{opacity:.35}7%,64%{opacity:1}68%,100%{opacity:.35}}
+@keyframes nw-glow{50%{box-shadow:0 0 34px rgba(57,255,136,.6)}}
+.nw-cta{animation:nw-glow 2.4s ease-in-out infinite}
+.nw-lane{position:relative;flex:1 1 90px;height:58px;min-width:90px;border-bottom:2px dashed rgba(57,255,136,.25);margin:0 4px}
+.nw-walker{position:absolute;bottom:-1px;left:0;width:34px;height:54px;animation:nw-stroll 10s linear infinite}
+.nw-walker svg{width:34px;height:54px;display:block;overflow:visible}
+.nw-walker .body{animation:nw-bob .5s ease-in-out infinite}
+.nw-walker .legA{transform-origin:20px 40px;animation:nw-swing .5s ease-in-out infinite}
+.nw-walker .legB{transform-origin:20px 40px;animation:nw-swing .5s ease-in-out infinite reverse}
+.nw-walker .screen{animation:nw-flash 10s linear infinite}
+.nw-card{transition:transform .2s,box-shadow .2s}.nw-card:hover{transform:translateY(-3px);box-shadow:0 0 22px rgba(57,255,136,.25)}
+@keyframes nw-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.nw-rise{animation:nw-rise .6s ease-out both}
+
+/* Décor « Miami années 80 » en arrière-plan (fixe, derrière tout le contenu). */
+.vc-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.vc-bg svg { width: 100%; height: 100%; display: block; }
+@keyframes vc-sway { from { transform: rotate(-1.4deg); } to { transform: rotate(1.4deg); } }
+@keyframes vc-shimmer { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
+.vc-sway { animation: vc-sway 6s ease-in-out infinite alternate; }
+.vc-rows, .vc-grid { animation: vc-shimmer 4s ease-in-out infinite; }
+
+@keyframes sx-float { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+.sx-float { animation: sx-float 3.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sx-float { animation: none; } }
+.nw-walker .legA,.nw-walker .legB{filter:drop-shadow(0 0 3px #F43F5E)}

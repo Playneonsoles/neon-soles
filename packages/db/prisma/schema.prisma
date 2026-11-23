@@ -1,0 +1,422 @@
+// Aligné sur la section 9 (mêmes noms de tables et de colonnes).
+// Les relations Prisma ne sont pas déclarées : les clés étrangères existent en SQL (migration 0001).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  wallet        String    @unique @db.VarChar(44)
+  pseudo        String?   @unique @db.VarChar(24)
+  wallet_kind   String?   @db.VarChar(16)
+  is_admin      Boolean   @default(false)
+  streak_days   Int       @default(0)
+  last_walk_day DateTime? @db.Date
+  device_hash   String?   @db.VarChar(64)
+  status        String    @default("active") @db.VarChar(16)
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+  gender               String?   @db.VarChar(16)
+  appearance           String?   @db.VarChar(20)
+  country              String?   @db.Char(2)
+  avatar               Int?      @db.SmallInt
+  profile_completed_at DateTime? @db.Timestamptz(6)
+  banned_reason        String?   @db.VarChar(200)
+  last_seen_at         DateTime? @db.Timestamptz(6)
+  session_version      Int       @default(0)
+  referral_code        String?   @unique @db.VarChar(12)
+  boost_until          DateTime? @db.Timestamptz(6)
+  claim_exempt         Boolean   @default(false)
+  email             String?   @unique @db.VarChar(254)
+  first_name        String?   @db.VarChar(60)
+  last_name         String?   @db.VarChar(60)
+  auth_provider     String?   @db.VarChar(16)
+  google_sub        String?   @unique @db.VarChar(40)
+  email_verified_at DateTime? @db.Timestamptz(6)
+}
+
+model email_codes {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email      String   @db.VarChar(254)
+  code_hash  String   @db.VarChar(64)
+  first_name String?  @db.VarChar(60)
+  last_name  String?  @db.VarChar(60)
+  wallet     String?  @db.VarChar(44)
+  attempts   Int      @default(0)
+  used       Boolean  @default(false)
+  expires_at DateTime @db.Timestamptz(6)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([email, created_at])
+}
+
+model login_events {
+  id         BigInt   @id @default(autoincrement())
+  user_id    String   @db.Uuid
+  country    String?  @db.Char(2)
+  device     String   @db.VarChar(12)
+  mode       String   @db.VarChar(8)
+  is_new     Boolean  @default(false)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([created_at(sort: Desc)])
+  @@index([user_id, created_at(sort: Desc)])
+}
+
+model auth_nonces {
+  nonce      String   @id @db.VarChar(64)
+  wallet     String   @db.VarChar(44)
+  expires_at DateTime @db.Timestamptz(6)
+  used       Boolean  @default(false)
+}
+
+model game_config {
+  key        String   @id @db.VarChar(64)
+  value      Json
+  updated_by String?  @db.Uuid
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  category   String   @default("general") @db.VarChar(24)
+}
+
+model game_config_history {
+  id         BigInt    @id @default(autoincrement())
+  key        String?   @db.VarChar(64)
+  old_value  Json?
+  new_value  Json?
+  changed_by String?   @db.Uuid
+  changed_at DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model shoes {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  owner_id        String    @db.Uuid
+  model           String    @default("starter") @db.VarChar(32)
+  level           Int       @default(1) @db.SmallInt
+  is_equipped     Boolean   @default(true)
+  upgrading_until DateTime? @db.Timestamptz(6)
+  asset_id        String?   @unique @db.VarChar(44)
+  metadata_uri    String?   @db.VarChar(256)
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  source          String    @default("starter") @db.VarChar(16)
+  attributes      Json      @default("{}")
+  granted_by      String?   @db.Uuid
+  removed_at      DateTime? @db.Timestamptz(6)
+  listing_id      String?   @db.Uuid
+  durability      Decimal   @default(100) @db.Decimal(5, 2)
+}
+
+model repair_orders {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String   @db.Uuid
+  shoe_id      String   @db.Uuid
+  restore_pct  Int      @db.SmallInt
+  price_walk   BigInt
+  status       String   @default("pending") @db.VarChar(12)
+  expires_at   DateTime @db.Timestamptz(6)
+  nonce        String   @db.VarChar(32)
+  tx_signature String?  @unique @db.VarChar(88)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id, created_at(sort: Desc)])
+}
+
+model shoe_models {
+  code       String   @id @db.VarChar(32)
+  name       String   @db.VarChar(48)
+  rarity     String   @default("common") @db.VarChar(16)
+  image_key  String?  @db.VarChar(128)
+  is_starter Boolean  @default(false)
+  active     Boolean  @default(true)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model collectibles {
+  code       String   @id @db.VarChar(32)
+  name       String   @db.VarChar(48)
+  kind       String   @default("badge") @db.VarChar(16)
+  rarity     String   @default("common") @db.VarChar(16)
+  image_key  String?  @db.VarChar(128)
+  active     Boolean  @default(true)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model user_collectibles {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String    @db.Uuid
+  collectible_code String    @db.VarChar(32)
+  granted_by       String?   @db.Uuid
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  removed_at       DateTime?  @db.Timestamptz(6)
+  listing_id       String?   @db.Uuid
+}
+
+model listings {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  seller_id         String    @db.Uuid
+  kind              String    @db.VarChar(12)
+  item_id           String    @db.Uuid
+  price_walk        BigInt
+  status            String    @default("active") @db.VarChar(12)
+  reserved_by       String?   @db.Uuid
+  reserved_until    DateTime? @db.Timestamptz(6)
+  reservation_nonce String?   @db.VarChar(32)
+  fee_lamports      BigInt?
+  buyer_id          String?   @db.Uuid
+  tx_signature      String?   @unique @db.VarChar(88)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  sold_at           DateTime? @db.Timestamptz(6)
+
+  @@index([seller_id, created_at(sort: Desc)])
+}
+
+model shop_orders {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String   @db.Uuid
+  level        Int      @db.SmallInt
+  price_walk   BigInt
+  status       String   @default("pending") @db.VarChar(12)
+  expires_at   DateTime @db.Timestamptz(6)
+  nonce        String   @db.VarChar(32)
+  tx_signature String?  @unique @db.VarChar(88)
+  shoe_id      String?  @db.Uuid
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id, created_at(sort: Desc)])
+}
+
+model part_types {
+  id        Int     @id @default(autoincrement())
+  slot      String  @db.VarChar(16)
+  rarity    String  @db.VarChar(16)
+  name      String  @db.VarChar(48)
+  bonus_pct Decimal @db.Decimal(5, 2)
+  image_key String  @db.VarChar(128)
+}
+
+model parts {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type_id     Int
+  owner_id    String   @db.Uuid
+  equipped_on String?  @db.Uuid
+  state       String   @default("free") @db.VarChar(16)
+  source      String   @db.VarChar(16)
+  asset_id    String?  @unique @db.VarChar(44)
+  is_frozen   Boolean  @default(false)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([owner_id, state])
+}
+
+model walk_sessions {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String    @db.Uuid
+  shoe_id          String    @db.Uuid
+  walk_day         DateTime  @db.Date
+  started_at       DateTime  @db.Timestamptz(6)
+  ended_at         DateTime? @db.Timestamptz(6)
+  valid_seconds    Int?      @default(0)
+  distance_m       Int?      @default(0)
+  steps            Int?      @default(0)
+  avg_speed_kmh    Decimal?  @db.Decimal(4, 2)
+  trust_score      Int?      @db.SmallInt
+  status           String    @default("running") @db.VarChar(16)
+  estimated_reward Decimal?  @default(0) @db.Decimal(30, 0)
+  confirmed_reward Decimal?  @db.Decimal(30, 0)
+  paused_ms        Int       @default(0)
+  paused_at        DateTime? @db.Timestamptz(6)
+
+  @@index([user_id, walk_day])
+  @@index([user_id, started_at(sort: Desc)])
+}
+
+// Pas de clé primaire dans la spec : accès par SQL brut ($executeRaw) au lot 2.
+model walk_points {
+  session_id String?   @db.Uuid
+  ts         DateTime? @db.Timestamptz(6)
+  lat        Float?
+  lng        Float?
+  accuracy_m Float?    @db.Real
+  speed_ms   Float?    @db.Real
+  steps      Int?
+
+  @@index([session_id, ts])
+  @@ignore
+}
+
+model ledger_entries {
+  id           BigInt   @id @default(autoincrement())
+  user_id      String?  @db.Uuid
+  kind         String   @db.VarChar(24)
+  amount       Decimal  @db.Decimal(30, 0)
+  status       String   @default("pending") @db.VarChar(16)
+  ref_id       String?  @db.Uuid
+  tx_signature String?  @db.VarChar(88)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id, status])
+  @@index([ref_id])
+}
+
+model claims {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String   @db.Uuid
+  amount       Decimal  @db.Decimal(30, 0)
+  fee          Decimal  @db.Decimal(30, 0)
+  status       String   @default("queued") @db.VarChar(16)
+  tx_signature String?  @db.VarChar(88)
+  attempts     Int?     @default(0) @db.SmallInt
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  sent_at      DateTime? @db.Timestamptz(6)
+
+  @@index([status])
+  @@index([user_id, created_at(sort: Desc)])
+}
+
+model upgrades {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shoe_id        String?   @db.Uuid
+  from_level     Int?      @db.SmallInt
+  to_level       Int?      @db.SmallInt
+  cost           Decimal?  @db.Decimal(30, 0)
+  burned         Decimal?  @db.Decimal(30, 0)
+  to_pool        Decimal?  @db.Decimal(30, 0)
+  to_treasury    Decimal?  @db.Decimal(30, 0)
+  parts_consumed String[]  @db.Uuid
+  tx_signature   String?   @unique @db.VarChar(88)
+  status         String?   @default("awaiting_tx") @db.VarChar(16)
+  created_at     DateTime? @default(now()) @db.Timestamptz(6)
+  user_id        String?   @db.Uuid
+  nonce          String?   @db.VarChar(32)
+  expires_at     DateTime? @db.Timestamptz(6)
+}
+
+model market_listings {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  part_id        String    @db.Uuid
+  seller_id      String    @db.Uuid
+  price          Decimal   @db.Decimal(30, 0)
+  status         String?   @default("active") @db.VarChar(16)
+  buyer_id       String?   @db.Uuid
+  reserved_until DateTime? @db.Timestamptz(6)
+  tx_signature   String?   @unique @db.VarChar(88)
+  expires_at     DateTime? @db.Timestamptz(6)
+  created_at     DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@index([status, price])
+}
+
+model chest_drops {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String?   @db.Uuid
+  trigger    String?   @db.VarChar(24)
+  roll       Int?
+  part_id    String?   @db.Uuid
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model nft_jobs {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind         String    @db.VarChar(16)
+  target_id    String    @db.Uuid
+  status       String    @default("queued") @db.VarChar(16)
+  tx_signature String?   @db.VarChar(88)
+  attempts     Int?      @default(0) @db.SmallInt
+  error        String?
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model nft_trees {
+  address    String    @id @db.VarChar(44)
+  capacity   Int
+  minted     Int       @default(0)
+  is_active  Boolean   @default(true)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model admin_audit {
+  id         BigInt   @id @default(autoincrement())
+  admin_id   String?  @db.Uuid
+  action     String   @db.VarChar(48)
+  detail     Json?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([created_at(sort: Desc)])
+}
+
+model daily_emissions {
+  day             DateTime @id @db.Date
+  active_users    Int?
+  emission_factor Decimal? @db.Decimal(4, 2)
+  earned_raw      Decimal? @db.Decimal(30, 0)
+  cap             Decimal? @db.Decimal(30, 0)
+  prorata         Decimal? @db.Decimal(5, 4)
+  burned          Decimal? @db.Decimal(30, 0)
+}
+
+model suggestions {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String?  @db.Uuid
+  body       String   @db.VarChar(400)
+  status     String   @default("open") @db.VarChar(12)
+  votes      Int      @default(0)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([status, votes(sort: Desc), created_at(sort: Desc)])
+}
+
+model suggestion_votes {
+  suggestion_id String   @db.Uuid
+  user_id       String   @db.Uuid
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+
+  @@id([suggestion_id, user_id])
+}
+
+model referrals {
+  referee_id  String   @id @db.Uuid
+  referrer_id String   @db.Uuid
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([referrer_id])
+}
+
+model weekly_awards {
+  week_start DateTime @id @db.Date
+  awarded_at DateTime @default(now()) @db.Timestamptz(6)
+  winners    Int      @default(0)
+}
+
+model forges {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String   @db.Uuid
+  shoe_ids       String[] @db.Uuid
+  from_level     Int      @db.SmallInt
+  cost           Decimal  @db.Decimal(30, 0)
+  burned         Decimal  @db.Decimal(30, 0)
+  to_pool        Decimal  @db.Decimal(30, 0)
+  to_treasury    Decimal  @db.Decimal(30, 0)
+  sol_lamports   Decimal  @db.Decimal(30, 0)
+  nonce          String   @db.VarChar(32)
+  expires_at     DateTime @db.Timestamptz(6)
+  status         String   @default("awaiting_tx") @db.VarChar(16)
+  tx_signature   String?  @unique @db.VarChar(88)
+  result_shoe_id String?  @db.Uuid
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id, created_at(sort: Desc)])
+}
+
+model user_badges {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String   @db.Uuid
+  code       String   @db.VarChar(24)
+  granted_by String?  @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@unique([user_id, code])
+  @@index([user_id])
+}
